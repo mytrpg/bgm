@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRPG BGM from Youtube</title>
     <style>
-        :root { --primary: #bb86fc; --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #00ffff; --grey: #555; }
+        :root { --primary: #bb86fc; --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #00ffff; --grey: #333; }
         body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 600px; display: none; }
         
@@ -20,6 +20,8 @@
         button { cursor: pointer; background: #3700b3; border: none; font-weight: bold; }
         
         .guest-master-vol { background: #333; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--accent); }
+        .vol-desc { font-size: 0.65rem; color: #888; margin-top: 5px; line-height: 1.4; }
+
         .btn-status { flex: 1; padding: 6px; font-size: 0.7rem; margin: 0; color: white; background: var(--grey); }
         .btn-status.active { background: var(--accent); color: #000; }
 
@@ -32,24 +34,37 @@
         .slider-label { font-size: 0.7rem; color: #aaa; min-width: 80px; }
         .vol-text { font-size: 0.75rem; min-width: 35px; text-align: right; cursor: pointer; color: var(--accent); text-decoration: underline; }
         input[type="range"] { cursor: pointer; height: 6px; accent-color: var(--accent); margin: 0; flex: 1; }
+        input[type="range"]:disabled { cursor: default; opacity: 0.5; pointer-events: none; }
+        
         .time-info { font-size: 0.65rem; color: #888; display: flex; justify-content: space-between; margin-top: 2px; }
 
         .playlist-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; cursor: grab; }
         .playlist-item.dragging { opacity: 0.5; border: 2px dashed var(--primary); }
         .item-main { display: flex; justify-content: space-between; align-items: center; }
         .btn-group { display: flex; gap: 4px; align-items: center; }
-        .small-btn { padding: 4px 8px; font-size: 0.7rem; width: auto; margin: 0; }
+        .small-btn { padding: 4px 10px; font-size: 0.7rem; width: auto; margin: 0; min-width: 40px; }
         
+        /* [3] 루프 버튼 텍스트 기반 스타일 */
         .btn-loop-on { background: #3EB489 !important; color: white; border: none; } 
         .btn-loop-off { background: #87CEEB !important; color: white; border: none; } 
+
+        .item-meta { font-size: 0.65rem; color: #777; margin-top: 5px; line-height: 1.4; }
+        .item-meta a { color: #666; text-decoration: none; }
 
         #user-list-card { font-size: 0.85rem; }
         .user-tag { display: inline-block; padding: 3px 8px; border-radius: 15px; background: #444; margin-right: 5px; margin-bottom: 5px; font-size: 0.75rem; }
         .user-tag.host { border: 1px solid var(--primary); color: var(--primary); }
 
-        #edit-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 30000; display: none; justify-content: center; align-items: center; }
+        /* [4] 전용 팝업(모달) 공통 스타일 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 30000; display: none; justify-content: center; align-items: center; }
         .modal-content { background: var(--card); padding: 25px; border-radius: 15px; width: 350px; border: 1px solid var(--accent); }
+        
+        /* [1] 한 줄 배치를 위한 레이아웃 */
+        .add-row { display: flex; gap: 10px; align-items: center; margin: 5px 0; }
+        .loop-check-label { display: flex; align-items: center; gap: 5px; font-size: 0.8rem; white-space: nowrap; cursor: pointer; }
+
         #log-area { font-size: 0.7rem; color: #888; background: #000; padding: 10px; border-radius: 5px; height: 100px; overflow-y: auto; margin-top: 10px; border: 1px solid #333; }
+        .footer { text-align: center; font-size: 0.65rem; color: #444; margin-top: 30px; margin-bottom: 20px; }
         .host-only { display: none; }
     </style>
 </head>
@@ -70,7 +85,7 @@
         <b>클릭하여 사운드 활성화</b>
     </div>
 
-    <div id="edit-modal">
+    <div id="edit-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 style="margin-top:0; color:var(--accent);">BGM 정보 수정</h3>
             <label style="font-size:0.8rem;">곡 제목</label>
@@ -78,8 +93,20 @@
             <label style="font-size:0.8rem;">유튜브 URL</label>
             <input type="text" id="edit-url">
             <div style="display:flex; gap:10px; margin-top:10px;">
-                <button onclick="closeEditModal()" style="background:#444; flex:1;">취소</button>
+                <button onclick="closeModal('edit-modal')" style="background:#444; flex:1;">취소</button>
                 <button onclick="saveEdit()" style="flex:1; background:var(--accent); color:#000;">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="vol-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:var(--accent);">볼륨 설정</h3>
+            <p id="vol-modal-target" style="font-size:0.75rem; color:#aaa; margin-bottom:10px;"></p>
+            <input type="number" id="vol-input-box" min="0" max="100" placeholder="0 ~ 100 사이 숫자">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button onclick="closeModal('vol-modal')" style="background:#444; flex:1;">취소</button>
+                <button onclick="saveVolumeFromModal()" style="flex:1; background:var(--accent); color:#000;">설정완료</button>
             </div>
         </div>
     </div>
@@ -88,9 +115,10 @@
         <div class="guest-master-vol">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
                 <span style="font-weight:bold; color:var(--accent); font-size:0.9rem;">My Master Volume</span>
-                <span id="guest-vol-text" class="vol-text" onclick="manualVolInput('master')">100%</span>
+                <span id="guest-vol-text" class="vol-text" onclick="openVolModal('master')">100%</span>
             </div>
             <input type="range" id="guest-master-slider" min="0" max="100" value="100" oninput="changeMyMasterVolume(this.value)">
+            <p class="vol-desc">* 다른 사람에게는 영향을 주지 않고 나에게만 들리는 전체 음량입니다.</p>
         </div>
 
         <div class="card">
@@ -104,11 +132,16 @@
             <h3 style="margin-top:0; font-size: 0.9rem;">곡 추가</h3>
             <input type="text" id="yt-url" placeholder="유튜브 URL">
             <input type="text" id="custom-title" placeholder="표시 제목">
-            <div style="display:flex; align-items:center; gap:10px; font-size:0.8rem; margin:5px 0;">
-                <span>한곡 반복</span><input type="checkbox" id="is-loop" style="width:auto;">
+            
+            <div class="add-row">
+                <label class="loop-check-label">
+                    <input type="checkbox" id="is-loop" style="width:auto; margin:0;">
+                    한곡 반복
+                </label>
+                <button onclick="addToPlaylist()" style="background:#444; margin:0; flex:1;">플레이리스트에 추가</button>
             </div>
-            <button onclick="addToPlaylist()" style="background:#444">목록에 추가</button>
-            <div style="display: flex; gap: 5px;">
+
+            <div style="display: flex; gap: 5px; margin-top:10px;">
                 <button onclick="savePlaylist()" style="flex:1; background:#333; font-size:0.7rem;">💾 리스트 저장</button>
                 <button onclick="document.getElementById('file-input').click()" style="flex:1; background:#333; font-size:0.7rem;">📂 불러오기</button>
                 <button onclick="softReset()" style="flex:1; background:#b71c1c; font-size:0.7rem;">🧹 초기화</button>
@@ -126,6 +159,8 @@
             <h3 style="margin-top:0; font-size: 0.9rem;">접속 중인 사람들 (<span id="user-count">0</span>명)</h3>
             <div id="user-list-container"></div>
         </div>
+
+        <div class="footer">문의: Twitter @SIHAST</div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -189,15 +224,34 @@
 
         function unlockAudio() { document.getElementById('audio-unlock').style.display = 'none'; log(`세션 시작: ${myNickname}`); }
 
-        function manualVolInput(type, vid = null, index = null) {
+        // [4] 볼륨 수정 전용 모달 로직
+        let volTargetType = null;
+        let volTargetVid = null;
+        let volTargetIndex = null;
+
+        function openVolModal(type, vid = null, index = null) {
+            volTargetType = type;
+            volTargetVid = vid;
+            volTargetIndex = index;
+            
             const current = type === 'master' ? myMasterVol : (type === 'active' ? currentActiveData[vid].volume : playlist[index].volume);
-            const input = prompt("볼륨을 입력하세요 (0-100):", current);
-            if (input !== null && !isNaN(input)) {
-                const val = Math.max(0, Math.min(100, parseInt(input)));
-                if (type === 'master') changeMyMasterVolume(val);
-                else if (type === 'active') sendVolumeControl(vid, val);
-                else if (type === 'playlist') playlistVolume(index, val);
-            }
+            const title = type === 'master' ? '내 마스터 볼륨' : (type === 'active' ? currentActiveData[vid].title : playlist[index].title);
+            
+            document.getElementById('vol-modal-target').innerText = `대상: ${title}`;
+            document.getElementById('vol-input-box').value = current;
+            document.getElementById('vol-modal').style.display = 'flex';
+        }
+
+        function saveVolumeFromModal() {
+            const valBox = document.getElementById('vol-input-box').value;
+            if (valBox === "" || isNaN(valBox)) return alert("숫자를 입력해주세요.");
+            const val = Math.max(0, Math.min(100, parseInt(valBox)));
+
+            if (volTargetType === 'master') changeMyMasterVolume(val);
+            else if (volTargetType === 'active') sendVolumeControl(volTargetVid, val);
+            else if (volTargetType === 'playlist') playlistVolume(volTargetIndex, val);
+            
+            closeModal('vol-modal');
         }
 
         function changeMyMasterVolume(val) {
@@ -228,12 +282,12 @@
                     const s = track.status;
                     const l = track.loop;
                     
-                    // [기능 추가] '현재 재생 중인 BGM' 영역에 루프 토글 버튼 추가
+                    // [3] 반복/1회 텍스트 버튼 적용
                     div.innerHTML = `
                         <div class="active-header">
                             <span class="active-title">${track.title}</span>
                             <div class="active-controls" style="display:${isHost ? 'flex' : 'none'};">
-                                <button class="small-btn ${l ? 'btn-loop-on' : 'btn-loop-off'}" style="flex:0.6; font-size:0.6rem;" onclick="sendLoopControl('${vid}', ${!l})">${l ? '🔄' : '➡️'}</button>
+                                <button class="small-btn ${l ? 'btn-loop-on' : 'btn-loop-off'}" style="flex:0.6; font-size:0.65rem;" onclick="sendLoopControl('${vid}', ${!l})">${l ? '반복' : '1회'}</button>
                                 <button class="btn-status ${s==='playing'?'active':''}" onclick="sendIndividualControl('${vid}', 'playing')">▶</button>
                                 <button class="btn-status ${s==='paused'?'active':''}" onclick="sendIndividualControl('${vid}', 'paused')">II</button>
                                 <button class="btn-status ${s==='stopped'?'active':''}" onclick="sendIndividualControl('${vid}', 'stopped')">■</button>
@@ -241,8 +295,8 @@
                         </div>
                         <div class="slider-group">
                             <span class="slider-label">재생 볼륨</span>
-                            <input type="range" min="0" max="100" value="${track.volume || 100}" ${isHost?'':'disabled'} oninput="sendVolumeControl('${vid}', this.value)">
-                            <span class="vol-text" onclick="${isHost?`manualVolInput('active', '${vid}')`:''}">${track.volume || 100}%</span>
+                            <input type="range" min="0" max="100" value="${track.volume || 100}" disabled>
+                            <span class="vol-text" onclick="${isHost?`openVolModal('active', '${vid}')`:''}">${track.volume || 100}%</span>
                         </div>
                         <div style="display:${isHost ? 'block' : 'none'};">
                             <input type="range" class="progress-bar" id="bar-${vid}" value="0" min="0" step="1" oninput="manualSeek('${vid}', this.value)">
@@ -271,9 +325,8 @@
                 height: '1', width: '1', videoId: vid,
                 playerVars: { 'autoplay': 1, 'controls': 0, 'playsinline': 1 },
                 events: {
-                    'onReady': (e) => { applyCalculatedVolume(vid); e.target.playVideo(); log(`재생: [${title}]`); },
+                    'onReady': (e) => { applyCalculatedVolume(vid); e.target.playVideo(); log(`재생 시작: [${title}]`); },
                     'onStateChange': (e) => { 
-                        // [수정] Firebase의 최신 루프 상태를 참조하여 반복 재생 여부 결정
                         if (e.data === YT.PlayerState.ENDED) {
                             const currentLoop = (currentActiveData[vid] && currentActiveData[vid].loop);
                             if (currentLoop) e.target.playVideo();
@@ -285,8 +338,13 @@
 
         function sendIndividualControl(vid, status) { db.ref(`rooms/${roomId}/active/${vid}/status`).set(status); }
         function sendVolumeControl(vid, vol) { db.ref(`rooms/${roomId}/active/${vid}/volume`).set(parseInt(vol)); }
-        // [신규] 실시간 루프 상태 전송 함수
-        function sendLoopControl(vid, loopState) { db.ref(`rooms/${roomId}/active/${vid}/loop`).set(loopState); log(`루프 설정 변경: ${vid}`); }
+        
+        // [2] 루프 설정 로그: ID 대신 설정한 제목 표시
+        function sendLoopControl(vid, loopState) { 
+            const title = currentActiveData[vid].title || vid;
+            db.ref(`rooms/${roomId}/active/${vid}/loop`).set(loopState); 
+            log(`루프 설정 변경: [${title}] -> ${loopState ? '반복' : '1회'}`); 
+        }
 
         function updateAllProgress() {
             if (!isHost) return;
@@ -317,6 +375,7 @@
             render(); document.getElementById('yt-url').value = ""; document.getElementById('custom-title').value = "";
         }
 
+        // [3] 루프 버튼 텍스트 변경 (1회/반복)
         function render() {
             const container = document.getElementById('playlist-container'); container.innerHTML = '';
             playlist.forEach((item, i) => {
@@ -328,17 +387,17 @@
                         <div class="btn-group">
                             ${isHost ? `
                                 <div class="slider-group" style="margin-right:10px;">
-                                    <input type="range" min="0" max="100" value="${item.volume}" style="width:60px;" oninput="playlistVolume(${i}, this.value)">
-                                    <span class="vol-text" style="font-size:0.6rem;" onclick="manualVolInput('playlist', null, ${i})">${item.volume}%</span>
+                                    <input type="range" min="0" max="100" value="${item.volume}" style="width:60px;" disabled>
+                                    <span class="vol-text" style="font-size:0.6rem;" onclick="openVolModal('playlist', null, ${i})">${item.volume}%</span>
                                 </div>
-                                <button class="small-btn ${item.loop?'btn-loop-on':'btn-loop-off'}" onclick="toggleLoop(${i})">${item.loop?'🔄':'➡️'}</button>
+                                <button class="small-btn ${item.loop?'btn-loop-on':'btn-loop-off'}" onclick="toggleLoop(${i})">${item.loop?'반복':'1회'}</button>
                                 <button class="small-btn" onclick="togglePlay(${i})" style="background:var(--accent); color:#000;">${isActive?'STOP':'PLAY'}</button>
                                 <button class="small-btn" onclick="openEditModal(${i})" style="background:#555">수정</button>
                                 <button class="small-btn" onclick="removeTrack(${i})" style="background:#b71c1c">X</button>
                             ` : ''}
                         </div>
                     </div>
-                    ${isHost ? `<div class="item-meta">📄 원제: ${item.originalTitle}<br>🔗 ${item.url}</div>` : ''}
+                    ${isHost ? `<div class="item-meta">📄 원제: ${item.originalTitle}<br>🔗 <a href="${item.url}" target="_blank">${item.url}</a></div>` : ''}
                 `;
                 if (isHost) {
                     div.addEventListener('dragstart', () => div.classList.add('dragging'));
@@ -363,13 +422,14 @@
             document.getElementById('edit-url').value = playlist[i].url;
             document.getElementById('edit-modal').style.display = 'flex';
         }
-        function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        
         function saveEdit() {
             const newTitle = document.getElementById('edit-title').value, newUrl = document.getElementById('edit-url').value;
             const newVid = newUrl.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/)?.[1];
             if (newTitle) playlist[editingIndex].title = newTitle;
             if (newVid) { playlist[editingIndex].url = newUrl; playlist[editingIndex].id = newVid; }
-            render(); closeEditModal();
+            render(); closeModal('edit-modal');
         }
 
         function saveOrder() {
