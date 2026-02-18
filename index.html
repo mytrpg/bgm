@@ -21,58 +21,51 @@
         h2 { color: var(--primary); margin: 0; font-size: 1rem; }
         h3 { color: var(--primary); margin: 0; font-size: 0.95rem; }
         input, button { background: #2c2c2c; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 6px; margin: 4px 0; width: 100%; box-sizing: border-box; }
-        button { cursor: pointer; background: #3700b3; border: none; font-weight: bold; font-size: 0.85rem; }
-        
-        /* My Master Volume */
+        button { cursor: pointer; border: none; font-weight: bold; font-size: 0.85rem; }
+
+        /* [상단] My Master Volume */
         .guest-master-vol { background: #333; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--accent); }
         .vol-header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
         .vol-desc { font-size: 0.65rem; color: #888; margin: 0; }
 
-        /* 현재 재생 중인 BGM 리스트 (글자 크기 복구) */
+        /* [현재 재생 중인 BGM] 글자 크기 및 버튼 레이아웃 수정 */
         .active-track-item { background: #252525; padding: 15px; border-radius: 10px; margin-top: 10px; border-left: 4px solid var(--accent); }
-        .active-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .active-title { font-weight: bold; color: var(--accent); font-size: 1rem; }
-        .active-controls { display: flex; gap: 5px; width: 60%; align-items: center; }
+        .active-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; }
+        .active-title { font-weight: 800; color: #fff; font-size: 1.1rem; text-shadow: 0 0 5px rgba(0,255,255,0.2); }
+        .active-controls { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
         
-        /* 볼륨 및 재생 바 스타일 */
+        /* 버튼 색상 체계: 상태일 때 시안, 아닐 때 라벤더 */
+        .btn-status { padding: 6px 8px; font-size: 0.7rem; background: var(--primary); color: #000; min-width: 35px; border-radius: 4px; }
+        .btn-status.active { background: var(--accent) !important; font-weight: 800; }
+        .btn-delete { background: #444; color: #fff; min-width: 55px !important; } /* 지우기 버튼 가로 확장 */
+
+        /* 볼륨 바(컬러) vs 재생 바(기본) 구분 */
         .slider-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; width: 100%; }
-        .row-label { font-size: 0.7rem; color: #aaa; white-space: nowrap; }
-        .vol-text { font-size: 0.75rem; min-width: 40px; color: var(--accent); text-decoration: underline; cursor: pointer; text-align: right; }
+        input[type="range"] { -webkit-appearance: none; height: 6px; border-radius: 3px; outline: none; background: #444; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid #000; }
         
-        /* 볼륨 바 컬러링 유지 */
-        input[type="range"] { -webkit-appearance: none; flex: 1; height: 6px; background: #444; border-radius: 3px; cursor: pointer; outline: none; }
-        input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--accent); margin-top: -4px; box-shadow: 0 0 2px #000; }
-        
-        /* 볼륨 바 색깔을 채우기 위한 백그라운드 처리 */
-        .fill-cyan { background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--p), #444 var(--p)) !important; }
+        /* 볼륨 바 전용 컬러링 */
+        .vol-slider { background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--p), #444 var(--p)) !important; }
+        /* 재생 바 전용(이전 스타일) */
+        .progress-bar { background: #222 !important; border: 1px solid #333; }
 
-        .time-text { font-size: 0.65rem; color: #888; min-width: 80px; text-align: right; font-family: monospace; }
-
-        /* 플레이리스트 (기능 복구) */
-        .playlist-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; cursor: grab; }
-        .item-main { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        /* [플레이리스트] 기능 복구 및 버튼화 */
+        .playlist-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; }
+        .item-main { display: flex; justify-content: space-between; align-items: center; }
         .btn-group { display: flex; gap: 4px; align-items: center; }
-        .small-btn { padding: 4px 8px; font-size: 0.65rem; width: auto; min-width: 40px; }
+        .small-btn { padding: 5px 10px; font-size: 0.7rem; width: auto; min-width: 40px; border-radius: 4px; }
         
-        /* 버튼 색상 */
-        .btn-loop-on { background: var(--primary) !important; color: #000; }
-        .btn-loop-off { background: #555 !important; color: #ccc; }
-        .btn-play-toggle { background: var(--accent) !important; color: #000; }
-        .btn-stop-toggle { background: var(--primary) !important; color: #000; }
+        /* 플레이리스트 버튼 상태색 */
+        .btn-play-toggle { background: var(--primary); color: #000; } /* 평소 라벤더 */
+        .btn-play-toggle.on { background: var(--accent); color: #000; font-weight: 800; } /* 재생 중 시안 */
         
-        .item-meta { font-size: 0.65rem; color: #777; margin-top: 6px; line-height: 1.4; display: flex; align-items: center; gap: 5px; }
+        /* 메타 정보 (링크+원제) 한 줄 요약 */
+        .item-meta { font-size: 0.65rem; color: #777; margin-top: 8px; display: flex; align-items: center; gap: 8px; overflow: hidden; white-space: nowrap; }
+        .meta-link { color: #00ffff; text-decoration: none; font-family: monospace; flex-shrink: 0; }
+        .meta-title { color: #888; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+        .copy-icon { cursor: pointer; color: var(--accent); font-size: 0.8rem; }
 
-        /* 로그 및 유저 목록 */
         #log-area { font-size: 0.65rem; color: #888; background: #000; padding: 10px; border-radius: 5px; height: 100px; overflow-y: auto; border: 1px solid #333; }
-        .user-tag { display: inline-block; padding: 2px 7px; border-radius: 12px; background: #333; margin-right: 4px; font-size: 0.7rem; border: 1px solid #444; }
-        .user-tag.host { border-color: var(--primary); color: var(--primary); }
-
-        /* 모달 시스템 */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 30000; display: none; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 15px; width: 350px; border: 1px solid var(--accent); }
-        .modal-desc { font-size: 0.8rem; color: #bbb; line-height: 1.6; margin: 15px 0; }
-        
         .footer { text-align: center; font-size: 0.6rem; color: #444; margin-top: 30px; margin-bottom: 20px; }
         .host-only { display: none; }
     </style>
@@ -85,9 +78,6 @@
             <input type="text" id="input-room-name" placeholder="방 이름을 입력하세요">
             <input type="text" id="input-nickname" placeholder="닉네임">
             <button onclick="enterRoom('host')" style="background:var(--primary); color:#000;">방 생성 (호스트)</button>
-            <div id="guest-msg" style="display:none; margin-top:15px; font-size:0.8rem; color:#888;">
-                링크 접속 중입니다. 닉네임을 입력하고 입장하세요.
-            </div>
         </div>
     </div>
 
@@ -98,8 +88,8 @@
 
     <div id="edit-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="color:var(--accent);">BGM 정보 수정</h3>
-            <input type="text" id="edit-title" placeholder="곡 제목">
+            <h3 style="color:var(--accent);">정보 수정</h3>
+            <input type="text" id="edit-title" placeholder="제목">
             <input type="text" id="edit-url" placeholder="유튜브 URL">
             <div style="display:flex; gap:8px; margin-top:15px;">
                 <button onclick="closeModal('edit-modal')" style="background:#444; flex:1;">취소</button>
@@ -122,14 +112,8 @@
 
     <div id="reset-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="color:var(--primary);">방 데이터 초기화</h3>
-            <div class="modal-desc">
-                이 작업은 다음을 수행합니다:<br>
-                - 현재 재생 중인 모든 BGM 정지 및 제거<br>
-                - 하단 플레이리스트의 모든 목록 삭제<br>
-                - 방의 찌꺼기 데이터 완전 청소<br><br>
-                <b>주의: 접속 중인 닉네임과 권한은 유지됩니다.</b>
-            </div>
+            <h3 style="color:var(--primary);">방 초기화</h3>
+            <p class="modal-desc">현재 재생 중인 모든 BGM을 정지하고 리스트를 비웁니다. 닉네임과 권한은 유지됩니다.</p>
             <div style="display:flex; gap:8px;">
                 <button onclick="closeModal('reset-modal')" style="background:#444; flex:1;">취소</button>
                 <button onclick="executeSoftReset()" style="flex:1; background:#b71c1c; color:#fff;">초기화 실행</button>
@@ -141,10 +125,10 @@
         <div class="guest-master-vol">
             <div class="vol-header">
                 <span style="font-weight:bold; color:var(--accent); font-size:0.85rem;">My Master Volume</span>
-                <p class="vol-desc">* 나에게만 들리는 전체 음량입니다.</p>
+                <p class="vol-desc">* 나에게만 적용되는 음량입니다.</p>
                 <span id="guest-vol-text" class="vol-text" title="클릭하여 볼륨 조절" onclick="openVolModal('master')">100%</span>
             </div>
-            <input type="range" id="guest-master-slider" min="0" max="100" value="100" oninput="changeMyMasterVolume(this.value)" class="fill-cyan" style="--p:100%">
+            <input type="range" id="guest-master-slider" min="0" max="100" value="100" oninput="changeMyMasterVolume(this.value)" class="vol-slider" style="--p:100%">
         </div>
 
         <div class="card">
@@ -212,31 +196,12 @@
 
         let roomId = "", roomName = "", isHost = false, myNickname = "", myMasterVol = 100, playlist = [], players = {}, currentActiveData = {};
 
-        // [접속 초과 메시지]
-        db.ref(".info/connected").on("value", (snap) => {
-            if (snap.val() === false) {
-                // 접속이 끊긴 지 10초가 지났는데도 연결이 안 되면 알림 (초기 로딩 시 100명 초과 대응)
-                setTimeout(() => {
-                    if (!db.app.options) return; // 미초기화 상태면 무시
-                    if (snap.val() === false && !document.getElementById('main-container').style.display) {
-                        alert("현재 서버 접속자가 너무 많아 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
-                    }
-                }, 10000);
-            }
-        });
-
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
-            const rId = params.get('room');
-            if (rId) {
-                roomId = rId;
-                document.getElementById('guest-msg').style.display = 'block';
-                if (params.get('h') === '1') {
-                    isHost = true;
-                    document.querySelector('button[onclick="enterRoom(\'host\')"]').innerText = "관리자 세션 복구";
-                } else {
-                    document.querySelector('button[onclick="enterRoom(\'host\')"]').style.display = 'none';
-                }
+            if (params.get('room')) {
+                roomId = params.get('room');
+                document.getElementById('input-room-name').style.display = 'none';
+                if (params.get('h') === '1') isHost = true;
             }
         };
 
@@ -253,18 +218,10 @@
             } else {
                 const snap = await db.ref(`rooms/${roomId}`).once('value');
                 if (!snap.exists()) return alert("만료된 방입니다.");
-                const emptySince = snap.val().emptySince;
-                if (emptySince && Date.now() - emptySince > 300000) {
-                    await db.ref(`rooms/${roomId}`).remove();
-                    return alert("5분 이상 비어있어 방 데이터가 삭제되었습니다.");
-                }
                 roomName = snap.val().roomName || "TRPG SESSION";
             }
 
-            if (isHost) {
-                const newUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}&h=1`;
-                window.history.replaceState({}, '', newUrl);
-            }
+            if (isHost) window.history.replaceState({}, '', `?room=${roomId}&h=1`);
 
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('audio-unlock').style.display = 'flex';
@@ -290,8 +247,6 @@
             usersRef.on('value', (snap) => {
                 const users = snap.val() || {};
                 const userArray = Object.values(users);
-                if (userArray.length === 0) db.ref(`rooms/${roomId}/emptySince`).set(Date.now());
-                else db.ref(`rooms/${roomId}/emptySince`).remove();
                 document.getElementById('user-count').innerText = userArray.length;
                 const container = document.getElementById('user-list-container');
                 container.innerHTML = '';
@@ -307,7 +262,7 @@
 
         function unlockAudio() { document.getElementById('audio-unlock').style.display = 'none'; log(`세션 접속: ${myNickname}`); }
 
-        // 볼륨 모달
+        // 볼륨 제어 로직
         let vt = null, vv = null, vi = null;
         function openVolModal(type, vid = null, index = null) {
             vt = type; vv = vid; vi = index;
@@ -316,6 +271,7 @@
             document.getElementById('vol-input-box').value = cur;
             document.getElementById('vol-modal').style.display = 'flex';
         }
+
         function saveVolumeFromModal() {
             const val = Math.max(0, Math.min(100, parseInt(document.getElementById('vol-input-box').value) || 0));
             if (vt === 'master') changeMyMasterVolume(val);
@@ -328,8 +284,7 @@
             myMasterVol = val;
             document.getElementById('guest-vol-text').innerText = `${val}%`;
             const slider = document.getElementById('guest-master-slider');
-            slider.value = val;
-            slider.style.setProperty('--p', val + '%');
+            slider.value = val; slider.style.setProperty('--p', val + '%');
             Object.keys(players).forEach(vid => applyCalculatedVolume(vid));
         }
 
@@ -340,7 +295,6 @@
             }
         }
 
-        // [현재 재생 중인 BGM UI] 볼륨 바 및 레이아웃 복구
         function initSync() {
             db.ref(`rooms/${roomId}/active`).on('value', (snap) => {
                 currentActiveData = snap.val() || {};
@@ -358,27 +312,26 @@
                         <div class="active-header">
                             <span class="active-title">${track.title}</span>
                             <div class="active-controls" style="display:${isHost ? 'flex' : 'none'};">
-                                <button class="small-btn ${l ? 'btn-loop-on' : 'btn-loop-off'}" style="flex:0.6;" onclick="db.ref('rooms/${roomId}/active/${vid}/loop').set(${!l})">${l ? '반복' : '1회'}</button>
+                                <button class="btn-status ${l ? 'active' : ''}" onclick="db.ref('rooms/${roomId}/active/${vid}/loop').set(${!l})">${l ? '반복' : '1회'}</button>
                                 <button class="btn-status ${s==='playing'?'active':''}" onclick="db.ref('rooms/${roomId}/active/${vid}/status').set('playing')">▶</button>
                                 <button class="btn-status ${s==='paused'?'active':''}" onclick="db.ref('rooms/${roomId}/active/${vid}/status').set('paused')">II</button>
                                 <button class="btn-status ${s==='stopped'?'active':''}" onclick="db.ref('rooms/${roomId}/active/${vid}/status').set('stopped')">■</button>
-                                <button class="small-btn" style="background:#444;" onclick="db.ref('rooms/${roomId}/active/${vid}').remove()">지우기</button>
+                                <button class="btn-status btn-delete" onclick="db.ref('rooms/${roomId}/active/${vid}').remove()">지우기</button>
                             </div>
                         </div>
                         <div class="slider-row">
-                            <span class="row-label">재생 볼륨</span>
-                            <span class="vol-text" title="클릭하여 수정" onclick="${isHost?`openVolModal('active', '${vid}')`:''}">${vol}%</span>
-                            <input type="range" min="0" max="100" value="${vol}" disabled class="fill-cyan" style="--p:${vol}%; flex:0.3; min-width:60px;">
-                            <div style="width:15px;"></div>
-                            <input type="range" class="progress-bar fill-cyan" id="bar-${vid}" value="0" min="0" step="1" oninput="if(players['${vid}'])players['${vid}'].seekTo(this.value)" ${isHost?'':'disabled'} style="--p:0%">
+                            <span class="row-label">Vol</span>
+                            <span class="vol-text" title="수정" onclick="${isHost?`openVolModal('active', '${vid}')`:''}">${vol}%</span>
+                            <input type="range" min="0" max="100" value="${vol}" disabled class="vol-slider" style="--p:${vol}%; flex:0.25;">
+                            <div style="width:10px;"></div>
+                            <input type="range" class="progress-bar" id="bar-${vid}" value="0" min="0" step="1" oninput="if(players['${vid}'])players['${vid}'].seekTo(this.value)" ${isHost?'':'disabled'} style="flex:1;">
                             <span class="time-text" id="time-${vid}">0:00 / 0:00</span>
                         </div>
                     `;
                     uiContainer.appendChild(div);
 
-                    if (!players[vid]) {
-                        createPlayer(vid, track.loop, track.title, s);
-                    } else if (players[vid].getPlayerState) {
+                    if (!players[vid]) createPlayer(vid, track.loop, track.title, s);
+                    else if (players[vid].getPlayerState) {
                         if (s === 'playing') players[vid].playVideo();
                         else if (s === 'paused') players[vid].pauseVideo();
                         else if (s === 'stopped') { players[vid].pauseVideo(); players[vid].seekTo(0); }
@@ -413,8 +366,6 @@
                     if (bar && timeDisp) {
                         const cur = p.getCurrentTime(); const tot = p.getDuration();
                         bar.max = tot; bar.value = cur;
-                        const per = tot > 0 ? (cur / tot) * 100 : 0;
-                        bar.style.setProperty('--p', per + '%');
                         timeDisp.innerText = `${formatTime(cur)} / ${tot > 0 ? formatTime(tot) : "0:00"}`;
                     }
                 }
@@ -433,7 +384,7 @@
             render(); document.getElementById('yt-url').value = ""; document.getElementById('custom-title').value = "";
         }
 
-        // [플레이리스트 UI] 볼륨 바, 링크 아이콘, 수정 버튼 복구
+        // [플레이리스트] 볼륨 버튼화, 링크 아이콘/복사, 원제 생략 처리
         function render() {
             const container = document.getElementById('playlist-container'); container.innerHTML = '';
             playlist.forEach((item, i) => {
@@ -444,18 +395,21 @@
                         <span style="font-weight:bold; font-size:0.85rem;">${item.title} ${isActive ? '<span style="color:var(--accent); font-size:0.7rem;">[ON]</span>' : ''}</span>
                         <div class="btn-group">
                             ${isHost ? `
-                                <div class="slider-group" style="display:flex; align-items:center; gap:5px; margin-right:8px;">
-                                    <input type="range" min="0" max="100" value="${item.volume}" disabled class="fill-cyan" style="--p:${item.volume}%; width:50px; height:4px;">
-                                    <span class="vol-text" style="font-size:0.6rem; text-decoration:none;" onclick="openVolModal('playlist', null, ${i})">${item.volume}%</span>
-                                </div>
+                                <button class="small-btn btn-status" onclick="openVolModal('playlist', null, ${i})">${item.volume}%</button>
                                 <button class="small-btn ${item.loop?'btn-loop-on':'btn-loop-off'}" onclick="playlist[${i}].loop=!playlist[${i}].loop; render();">${item.loop?'반복':'1회'}</button>
-                                <button class="small-btn ${isActive ? 'btn-stop-toggle' : 'btn-play-toggle'}" onclick="${isActive ? `db.ref('rooms/${roomId}/active/${item.id}').remove()` : `db.ref('rooms/${roomId}/active/${item.id}').set({title:'${item.title}', status:'playing', loop:${item.loop}, volume:${item.volume}})`}">${isActive ? 'STOP' : 'PLAY'}</button>
-                                <button class="small-btn" style="background:#555" onclick="openEditModal(${i})">수정</button>
+                                <button class="small-btn btn-play-toggle ${isActive?'on':''}" onclick="${isActive ? `db.ref('rooms/${roomId}/active/${item.id}').remove()` : `db.ref('rooms/${roomId}/active/${item.id}').set({title:'${item.title}', status:'playing', loop:${item.loop}, volume:${item.volume}})`}">${isActive ? 'STOP' : 'PLAY'}</button>
+                                <button class="small-btn" style="background:#555" onclick="openEditModal( ${i} )">수정</button>
                                 <button class="small-btn" onclick="playlist.splice(${i}, 1); render();" style="background:#b71c1c">X</button>
                             ` : ''}
                         </div>
                     </div>
-                    ${isHost ? `<div class="item-meta">🔗 <a href="${item.url}" target="_blank" style="color:#666; text-decoration:underline;">${item.url}</a><br>📄 원제: ${item.originalTitle}</div>` : ''}
+                    ${isHost ? `
+                        <div class="item-meta">
+                            <span class="copy-icon" title="주소 복사" onclick="navigator.clipboard.writeText('${item.url}').then(()=>alert('복사됨'))">🔗</span>
+                            <a href="${item.url}" target="_blank" class="meta-link">${item.id}</a>
+                            <span class="meta-title">원제: ${item.originalTitle}</span>
+                        </div>
+                    ` : ''}
                 `;
                 if (isHost) {
                     div.ondragstart = () => div.classList.add('dragging');
@@ -487,17 +441,10 @@
             render(); closeModal('edit-modal');
         }
         function closeModal(mId) { document.getElementById(mId).style.display = 'none'; }
-        
-        // 초기화 모달 로직
         function openResetModal() { document.getElementById('reset-modal').style.display = 'flex'; }
-        function executeSoftReset() {
-            db.ref(`rooms/${roomId}/active`).remove();
-            playlist = []; render(); log("🧹 시스템 전체 초기화 완료.");
-            closeModal('reset-modal');
-        }
-
+        function executeSoftReset() { db.ref(`rooms/${roomId}/active`).remove(); playlist = []; render(); log("🧹 초기화 완료."); closeModal('reset-modal'); }
         function savePlaylist() {
-            const fn = prompt("저장 파일명:", `playlist_${roomName}`); if (!fn) return;
+            const fn = prompt("파일명:", `playlist_${roomName}`); if (!fn) return;
             const blob = new Blob([JSON.stringify(playlist)], {type: "application/json"});
             const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${fn}.json`; a.click();
         }
