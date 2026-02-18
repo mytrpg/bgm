@@ -9,27 +9,24 @@
         body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 650px; display: none; }
         
-        /* [모달 시스템] */
+        /* 모달 시스템 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 50000; display: none; justify-content: center; align-items: center; }
         .modal-content { background: var(--card); padding: 25px; border-radius: 15px; width: 340px; border: 1px solid var(--accent); box-sizing: border-box; }
         
-        /* [입장 화면] */
+        /* 입장 화면 */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 20000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .login-card { background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid #333; text-align: center; width: 340px; }
-        
-        /* [사운드 활성화] */
         #audio-unlock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 40000; display: none; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
         
-        /* [레이아웃] */
+        /* 레이아웃 */
         #players-container { width: 1px; height: 1px; overflow: hidden; position: absolute; opacity: 0; }
         .card { background: var(--card); border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid #333; position: relative; }
         .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; }
         
         h2, h3, .vol-title { color: var(--primary); margin: 0; font-size: 1.05rem; font-weight: bold; }
-        /* [수정] 현재 재생 중인 BGM 제목 크기 하향 */
         .section-title { color: #fff; text-shadow: 0 0 10px rgba(0,255,255,0.3); margin-top: 15px; margin-bottom: 10px; font-size: 0.9rem; font-weight: bold; }
 
-        input, button { background: #2c2c2c; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 6px; margin: 4px 0; width: 100%; box-sizing: border-box; }
+        input, button { background: #2c2c2c; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 6px; margin: 4px 0; width: 100%; box-sizing: border-box; display: block; }
         button { cursor: pointer; border: none; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
 
         /* My Master Volume */
@@ -38,15 +35,12 @@
         .vol-title { font-size: 1.05rem; font-weight: bold; color: var(--accent); white-space: nowrap; }
         .vol-desc { font-size: 0.65rem; color: #888; flex: 1; text-align: left; margin: 0; }
 
-        /* 현재 재생 중인 BGM */
+        /* [4] 현재 재생 중인 BGM 제목/버튼 2줄 구성 */
         .active-track-item { background: #252525; padding: 15px; border-radius: 10px; margin-top: 10px; border-left: 4px solid var(--accent); }
-        /* [수정] 제목과 버튼 사이 간격 미세 조정 */
-        .active-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
-        .active-title { font-weight: bold; color: var(--accent); font-size: 0.95rem; }
-        .active-controls { display: flex; gap: 4px; flex-shrink: 0; align-items: center; width: 78%; }
-        /* [수정] 볼륨 버튼 라벤더색 배경 */
-        .btn-vol-lavender { background: var(--primary) !important; color: #000 !important; font-weight: bold; }
-        .btn-status { height: 28px; font-size: 0.65rem; background: var(--primary); color: #000; flex: 1; border-radius: 4px; padding: 0; min-width: 42px; }
+        .active-title-line { font-weight: bold; color: var(--accent); font-size: 0.95rem; margin-bottom: 12px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .active-controls-line { display: flex; gap: 4px; align-items: center; width: 100%; }
+        
+        .btn-status { height: 28px; font-size: 0.65rem; background: var(--primary); color: #000; flex: 1; border-radius: 4px; padding: 0; margin: 0; min-width: 42px; }
         .btn-status.active { background: var(--accent) !important; font-weight: 800; }
         .btn-delete { background: #444; color: #fff; flex: 1.2 !important; min-width: 55px; }
 
@@ -57,19 +51,17 @@
         .time-text { font-size: 0.65rem; color: #888; min-width: 80px; text-align: right; font-family: monospace; }
 
         /* 플레이리스트 */
-        .playlist-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; cursor: grab; }
-        /* [수정] 제목과 버튼 사이 간격 */
+        .playlist-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; cursor: grab; user-select: none; }
+        .playlist-item.dragging { opacity: 0.3; border: 2px dashed var(--accent); }
         .item-main { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 5px; }
         .btn-group { display: flex; gap: 4px; align-items: center; }
-        /* [수정] 버튼 가로 길이 고정 및 확대 */
         .small-btn { height: 26px; font-size: 0.65rem; border-radius: 4px; width: 50px; text-align: center; margin: 0; flex-shrink: 0; }
         .btn-play-toggle { width: 60px; } 
         .btn-play-toggle.on { background: var(--accent) !important; font-weight: 800; }
         
-        /* [수정] 링크 텍스트 색상 연회색 통일 */
         .item-meta { font-size: 0.65rem; color: #777; margin-top: 8px; display: flex; align-items: center; gap: 8px; overflow: hidden; white-space: nowrap; }
-        .meta-link { color: #777; text-decoration: none; font-family: monospace; flex-shrink: 0; font-size: 0.65rem; }
-        .meta-title { color: #777; overflow: hidden; text-overflow: ellipsis; flex: 1; font-size: 0.65rem; }
+        .meta-link { color: #777; text-decoration: none; font-family: monospace; flex-shrink: 0; }
+        .meta-title { color: #777; overflow: hidden; text-overflow: ellipsis; flex: 1; }
 
         /* 접속자 명단 */
         #user-list-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
@@ -79,7 +71,7 @@
         /* 시스템 로그 */
         #log-area { font-size: 0.8rem; color: #aaa; background: #000; padding: 12px; border-radius: 5px; height: 100px; overflow-y: auto; border: 1px solid #333; line-height: 1.5; }
         
-        /* [수정] 곡 추가 영역 3줄 구성 고정 */
+        /* [1] 곡 추가 영역 3줄 구성 고정 */
         .add-music-header-controls { display: flex; align-items: center; gap: 10px; }
         .loop-label-wrapper { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; cursor: pointer; color: #888; white-space: nowrap; }
         .header-btn { width: auto; padding: 4px 10px; font-size: 0.65rem; margin: 0; background: #444; height: 26px; }
@@ -128,7 +120,6 @@
     <div id="delete-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 style="color:#b71c1c; margin-bottom:15px;">곡 삭제 확인</h3>
-            <p style="font-size:0.85rem; color:#eee; margin-bottom:5px;">정말로 삭제하시겠습니까?</p>
             <p id="delete-target-name" style="font-size:0.75rem; color:#888; margin-bottom:20px;"></p>
             <div style="display:flex; gap:8px;">
                 <button onclick="closeModal('delete-modal')" style="background:#444; flex:1;">취소</button>
@@ -192,7 +183,7 @@
             <div class="flex-header">
                 <h3 id="playlist-header">플레이리스트</h3>
                 <div class="host-only" style="display:flex; gap:4px;">
-                    <button class="header-btn" onclick="savePlaylist()">저장</button>
+                    <button class="header-btn" onclick="savePlaylistFile()">저장</button>
                     <button class="header-btn" onclick="document.getElementById('file-input').click()">열기</button>
                     <button class="header-btn" style="background:#b71c1c;" onclick="openResetModal()">초기화</button>
                 </div>
@@ -276,8 +267,14 @@
             
             if (isHost) {
                 document.querySelectorAll('.host-only').forEach(el => el.style.display = 'flex');
-                document.getElementById('playlist-header').innerText = '플레이리스트 (드래그하여 순서 변경)';
             }
+
+            // [2] 플레이리스트 동기화 리스너 추가
+            db.ref(`rooms/${roomId}/playlist`).on('value', (snap) => {
+                playlist = snap.val() || [];
+                render();
+            });
+
             setupPresence(); initSync(); setInterval(updateAllProgress, 1000);
         }
 
@@ -318,7 +315,10 @@
             const val = Math.max(0, Math.min(100, parseInt(document.getElementById('vol-input-box').value) || 0));
             if (vt === 'master') changeMyMasterVolume(val);
             else if (vt === 'active') db.ref(`rooms/${roomId}/active/${vv}/volume`).set(val);
-            else if (vt === 'playlist') { playlist[vi].volume = val; render(); }
+            else if (vt === 'playlist') { 
+                playlist[vi].volume = val; 
+                db.ref(`rooms/${roomId}/playlist`).set(playlist);
+            }
             closeModal('vol-modal');
         }
 
@@ -348,17 +348,16 @@
                     div.className = 'active-track-item';
                     const s = track.status, l = track.loop, vol = track.volume || 100;
                     
+                    // [4] 제목과 버튼 2줄 구성 적용
                     div.innerHTML = `
-                        <div class="active-header">
-                            <span class="active-title">${track.title}</span>
-                            <div class="active-controls" style="display:${isHost ? 'flex' : 'none'};">
-                                <button class="btn-status btn-vol-lavender" onclick="openVolModal('active', '${vid}')">${vol}%</button>
-                                <button class="btn-status ${l ? 'active' : ''}" onclick="db.ref('rooms/${roomId}/active/${vid}/loop').set(${!l})">${l ? '반복' : '1회'}</button>
-                                <button class="btn-status ${s==='playing'?'active':''}" onclick="db.ref('rooms/${roomId}/active/${vid}/status').set('playing')">재생</button>
-                                <button class="btn-status ${s==='paused'?'active':''}" onclick="db.ref('rooms/${roomId}/active/${vid}/status').set('paused')">일시정지</button>
-                                <button class="btn-status ${s==='stopped'?'active':''}" onclick="db.ref('rooms/${roomId}/active/${vid}/status').set('stopped')">정지</button>
-                                <button class="btn-status btn-delete" onclick="db.ref('rooms/${roomId}/active/${vid}').remove()">지우기</button>
-                            </div>
+                        <span class="active-title-line" title="${track.title}">${track.title}</span>
+                        <div class="active-controls-line" style="display:${isHost ? 'flex' : 'none'};">
+                            <button class="btn-status btn-vol-lavender" onclick="openVolModal('active', '${vid}')">${vol}%</button>
+                            <button class="btn-status ${l ? 'active' : ''}" onclick="db.ref('rooms/${roomId}/active/${vid}/loop').set(${!l})">${l ? '반복' : '1회'}</button>
+                            <button class="btn-status ${s==='playing'?'active':''}" onclick="db.ref('rooms/${roomId}/active/${vid}/status').set('playing')">재생</button>
+                            <button class="btn-status ${s==='paused'?'active':''}" onclick="db.ref('rooms/${roomId}/active/${vid}/status').set('paused')">일시정지</button>
+                            <button class="btn-status ${s==='stopped'?'active':''}" onclick="db.ref('rooms/${roomId}/active/${vid}/status').set('stopped')">정지</button>
+                            <button class="btn-status btn-delete" onclick="db.ref('rooms/${roomId}/active/${vid}').remove()">지우기</button>
                         </div>
                         <div class="slider-row">
                             <input type="range" id="bar-${vid}" value="0" min="0" step="1" oninput="if(players['${vid}'])players['${vid}'].seekTo(this.value)" ${isHost?'':'disabled'}>
@@ -378,7 +377,6 @@
                     }
                 });
                 Object.keys(players).forEach(vid => { if (!currentActiveData[vid]) { players[vid].stopVideo(); players[vid].destroy(); delete players[vid]; } });
-                render();
             });
         }
 
@@ -419,8 +417,12 @@
             if (!vid) return alert("URL 확인");
             let title = document.getElementById('custom-title').value, ot = "정보 없음";
             try { const res = await fetch(`https://noembed.com/embed?url=${url}`); const data = await res.json(); ot = data.title || "BGM"; if (!title) title = ot; } catch (e) { title = title || "BGM"; }
-            playlist.push({ id: vid, title: title, originalTitle: ot, url: url, loop: document.getElementById('is-loop').checked, volume: 100 });
-            render(); document.getElementById('yt-url').value = ""; document.getElementById('custom-title').value = "";
+            
+            const newTrack = { id: vid, title: title, originalTitle: ot, url: url, loop: document.getElementById('is-loop').checked, volume: 100 };
+            playlist.push(newTrack);
+            await db.ref(`rooms/${roomId}/playlist`).set(playlist);
+            
+            document.getElementById('yt-url').value = ""; document.getElementById('custom-title').value = "";
         }
 
         function render() {
@@ -433,8 +435,8 @@
                         <span style="font-weight:bold; font-size:0.85rem; pointer-events:none;">${item.title} ${isActive ? '<span style="color:var(--accent); font-size:0.7rem;">[ON]</span>' : ''}</span>
                         <div class="btn-group">
                             ${isHost ? `
-                                <button class="small-btn btn-vol-lavender" onclick="openVolModal('playlist', null, ${i})">${item.volume}%</button>
-                                <button class="small-btn btn-status ${item.loop?'active':''}" onclick="playlist[${i}].loop=!playlist[${i}].loop; render();">${item.loop?'반복':'1회'}</button>
+                                <button class="small-btn btn-status" style="background:var(--primary); color:#000;" onclick="openVolModal('playlist', null, ${i})">${item.volume}%</button>
+                                <button class="small-btn btn-status ${item.loop?'active':''}" onclick="togglePlaylistLoop(${i})">${item.loop?'반복':'1회'}</button>
                                 <button class="small-btn btn-status btn-play-toggle ${isActive?'on':''}" onclick="${isActive ? `db.ref('rooms/${roomId}/active/${item.id}').remove()` : `db.ref('rooms/${roomId}/active/${item.id}').set({title:'${item.title}', status:'playing', loop:${item.loop}, volume:${item.volume}})`}">${isActive ? 'STOP' : 'PLAY'}</button>
                                 <button class="small-btn" style="background:#555" onclick="openEditModal(${i})">수정</button>
                                 <button class="small-btn" onclick="openDeleteConfirm(${i})" style="background:#b71c1c; color:#fff;">X</button>
@@ -444,7 +446,10 @@
                     ${isHost ? `<div class="item-meta">🔗 <a href="${item.url}" target="_blank" class="meta-link">${item.id}</a> <span class="meta-title">원제: ${item.originalTitle}</span></div>` : ''}
                 `;
                 if (isHost) {
-                    div.ondragstart = (e) => { div.classList.add('dragging'); e.dataTransfer.setData('text/plain', i); };
+                    div.ondragstart = (e) => { 
+                        div.classList.add('dragging'); 
+                        e.dataTransfer.effectAllowed = 'move';
+                    };
                     div.ondragend = () => { div.classList.remove('dragging'); saveOrder(); };
                 }
                 container.appendChild(div);
@@ -452,38 +457,84 @@
             if (isHost) {
                 container.ondragover = e => {
                     e.preventDefault();
-                    const next = [...container.querySelectorAll('.playlist-item:not(.dragging)')].find(s => e.clientY <= s.getBoundingClientRect().top + s.offsetHeight / 2);
-                    container.insertBefore(dragging, next);
+                    const dragging = document.querySelector('.dragging');
+                    if (!dragging) return;
+                    const next = getNextElement(container, e.clientY);
+                    if (next == null) { container.appendChild(dragging); } else { container.insertBefore(dragging, next); }
                 };
             }
         }
 
+        function getNextElement(container, y) {
+            const draggables = [...container.querySelectorAll('.playlist-item:not(.dragging)')];
+            return draggables.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) { return { offset: offset, element: child }; } 
+                else { return closest; }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
         function openDeleteConfirm(i) {
             document.getElementById('delete-target-name').innerText = `대상: ${playlist[i].title}`;
-            document.getElementById('confirm-delete-btn').onclick = () => { playlist.splice(i, 1); render(); closeModal('delete-modal'); };
+            document.getElementById('confirm-delete-btn').onclick = async () => { 
+                playlist.splice(i, 1); 
+                await db.ref(`rooms/${roomId}/playlist`).set(playlist);
+                closeModal('delete-modal'); 
+            };
             document.getElementById('delete-modal').style.display = 'flex';
         }
-        function saveOrder() {
-            const titles = [...document.querySelectorAll('.playlist-item span:first-child')].map(el => el.innerText.split(' [ON]')[0].trim());
-            playlist = titles.map(t => playlist.find(p => p.title === t)).filter(p => p);
+        
+        async function saveOrder() {
+            const itemElements = [...document.querySelectorAll('.playlist-item')];
+            const newPlaylist = [];
+            itemElements.forEach(el => {
+                const titleText = el.querySelector('.item-main span').innerText.split(' [ON]')[0].trim();
+                const track = playlist.find(p => p.title === titleText);
+                if (track) newPlaylist.push(track);
+            });
+            playlist = newPlaylist;
+            await db.ref(`rooms/${roomId}/playlist`).set(playlist);
         }
+
+        async function togglePlaylistLoop(i) {
+            playlist[i].loop = !playlist[i].loop;
+            await db.ref(`rooms/${roomId}/playlist`).set(playlist);
+        }
+
         function openEditModal(i) { editingIndex = i; document.getElementById('edit-title').value = playlist[i].title; document.getElementById('edit-url').value = playlist[i].url; document.getElementById('edit-modal').style.display = 'flex'; }
-        function saveEdit() {
+        
+        async function saveEdit() {
             const nt = document.getElementById('edit-title').value, nu = document.getElementById('edit-url').value, nv = nu.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/)?.[1];
-            if (nt) playlist[editingIndex].title = nt; if (nv) { playlist[editingIndex].url = nu; playlist[editingIndex].id = nv; }
-            render(); closeModal('edit-modal');
+            if (nt) playlist[editingIndex].title = nt; 
+            if (nv) { playlist[editingIndex].url = nu; playlist[editingIndex].id = nv; }
+            await db.ref(`rooms/${roomId}/playlist`).set(playlist);
+            closeModal('edit-modal');
         }
+
         function closeModal(mId) { document.getElementById(mId).style.display = 'none'; }
         function openResetModal() { document.getElementById('reset-modal').style.display = 'flex'; }
-        function executeSoftReset() { db.ref(`rooms/${roomId}/active`).remove(); playlist = []; render(); log("🧹 초기화 완료."); closeModal('reset-modal'); }
-        function savePlaylist() {
+        async function executeSoftReset() { 
+            await db.ref(`rooms/${roomId}/active`).remove(); 
+            await db.ref(`rooms/${roomId}/playlist`).remove();
+            log("🧹 초기화 완료."); 
+            closeModal('reset-modal'); 
+        }
+
+        function savePlaylistFile() {
             const fn = prompt("파일명:", `playlist_${roomName}`); if (!fn) return;
             const blob = new Blob([JSON.stringify(playlist)], {type: "application/json"});
             const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${fn}.json`; a.click();
         }
-        function loadPlaylist(e) { const reader = new FileReader(); reader.onload = (ev) => { playlist = JSON.parse(ev.target.result); render(); }; reader.readAsText(e.target.files[0]); }
+        async function loadPlaylist(e) { 
+            const reader = new FileReader(); 
+            reader.onload = async (ev) => { 
+                playlist = JSON.parse(ev.target.result); 
+                await db.ref(`rooms/${roomId}/playlist`).set(playlist);
+            }; 
+            reader.readAsText(e.target.files[0]); 
+        }
         function log(msg) { const area = document.getElementById('log-area'); if(area) { area.innerHTML += `<div>> ${msg}</div>`; area.scrollTop = area.scrollHeight; } }
-        function copyInviteLink() { navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?room=${roomId}`).then(() => alert("초대 링크 복사 완료!")); }
         function onYouTubeIframeAPIReady() { console.log("Youtube API Ready."); }
     </script>
 </body>
