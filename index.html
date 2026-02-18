@@ -12,13 +12,15 @@
         /* 모달 시스템 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 50000; display: none; justify-content: center; align-items: center; }
         .modal-content { background: var(--card); padding: 25px; border-radius: 15px; width: 340px; border: 1px solid var(--accent); box-sizing: border-box; }
-        
-        /* [3] 정보 수정 모달 입력칸 너비 보정 */
         .modal-content input { width: 100% !important; margin-bottom: 12px; display: block; box-sizing: border-box; }
         
-        /* 입장 및 사운드 활성화 */
+        /* [2] 입장 화면 버튼 및 내용 가운데 정렬 복구 */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 20000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .login-card { background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid #333; text-align: center; width: 340px; }
+        .login-card { background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid #333; text-align: center; width: 340px; display: flex; flex-direction: column; align-items: center; }
+        .login-card h1 { margin-bottom: 20px; width: 100%; }
+        .login-card input { margin-bottom: 10px; width: 100%; display: block; }
+        .login-card button { width: 100%; padding: 12px; display: block; margin-top: 5px; }
+
         #audio-unlock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 40000; display: none; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
         
         /* 레이아웃 규격 */
@@ -35,9 +37,9 @@
         .guest-master-vol { background: #333; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--accent); }
         .vol-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 5px; }
         .vol-title { font-size: 1.05rem; font-weight: bold; color: var(--accent); white-space: nowrap; }
-        .vol-desc { font-size: 0.65rem; color: #888; flex: 1; text-align: left; }
+        .vol-desc { font-size: 0.65rem; color: #888; flex: 1; text-align: left; margin: 0; }
 
-        /* 현재 재생 중인 BGM (2단 구성) */
+        /* 현재 재생 중인 BGM */
         .active-track-item { background: #252525; padding: 15px; border-radius: 10px; margin-top: 10px; border-left: 4px solid var(--accent); }
         .active-title-line { font-weight: bold; color: var(--accent); font-size: 0.95rem; margin-bottom: 15px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .active-controls-line { display: flex; gap: 4px; align-items: center; width: 100%; }
@@ -216,7 +218,6 @@
             setupPresence(); initSync(); setInterval(updateAllProgress, 1000);
         }
 
-        // [수정] 링크 복사 기능 안정화
         function copyInviteLink() {
             const link = `${window.location.origin}${window.location.pathname}?room=${roomId}`;
             const t = document.createElement("textarea"); document.body.appendChild(t); t.value = link; t.select(); document.execCommand("copy"); document.body.removeChild(t);
