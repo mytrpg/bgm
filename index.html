@@ -3,36 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRPG BGM SYNC FINAL</title>
+    <title>TRPG BGM SYNC - MATIDA</title>
     <style>
         :root { --primary: #bb86fc; --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 500px; }
+        
+        /* 오버레이: 무조건 클릭하면 사라지도록 보완 */
         #audio-unlock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; text-align: center; }
-        #player-wrapper { width: 10px; height: 10px; overflow: hidden; opacity: 0.05; margin: 0 auto; }
+        
+        #player-wrapper { width: 10px; height: 10px; overflow: hidden; opacity: 0.01; margin: 0 auto; }
         .card { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid #333; }
         input, button { background: #2c2c2c; color: #fff; border: 1px solid #444; padding: 12px; border-radius: 6px; margin: 5px 0; width: 100%; box-sizing: border-box; }
         button { cursor: pointer; background: #3700b3; border: none; font-weight: bold; }
         .host-only { display: none; }
-        #current-title { color: #03dac6; font-weight: bold; font-size: 1.1rem; }
+        #log-area { font-size: 0.7rem; color: #888; background: #000; padding: 10px; border-radius: 5px; height: 60px; overflow-y: auto; margin-top: 10px; text-align: left; }
     </style>
 </head>
 <body>
 
     <div id="audio-unlock" onclick="startSession()">
-        <div style="font-size: 50px;">🎧</div>
-        <b>클릭하여 세션 오디오 활성화</b>
+        <div style="font-size: 50px; margin-bottom: 15px;">🎧</div>
+        <b>이곳을 클릭하여 세션을 시작하세요</b>
+        <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">(클릭 시 즉시 화면이 나타납니다)</p>
     </div>
 
     <div class="container">
         <div class="card">
-            <h2 style="color: var(--primary); margin-top: 0;">MATIDA SYNC <span id="room-id" style="font-size: 0.8rem; color: #666;"></span></h2>
+            <h2 style="color: var(--primary); margin: 0 0 15px 0; font-size: 1.1rem;">MATIDA BGM <span id="room-id" style="font-size: 0.7rem; color: #666;"></span></h2>
             <div id="player-wrapper"><div id="player"></div></div>
-            <div style="margin: 15px 0;">
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 5px;">현재 재생 곡</p>
-                <div id="current-title">대기 중...</div>
+            <div style="margin-bottom: 15px;">
+                <p style="font-size: 0.8rem; color: #888; margin: 0;">현재 재생 곡</p>
+                <div id="current-title" style="color: #03dac6; font-weight: bold; font-size: 1rem;">대기 중...</div>
             </div>
-            <div id="host-controls" class="host-only" style="display: flex; gap: 8px;">
+            <div id="host-controls" class="host-only" style="display: flex; gap: 5px;">
                 <button onclick="sendControl('playing')" style="background:#1b5e20">재생</button>
                 <button onclick="sendControl('paused')" style="background:#e65100">일시정지</button>
                 <button onclick="sendControl('stopped')" style="background:#b71c1c">정지</button>
@@ -40,11 +44,11 @@
         </div>
 
         <div id="host-panel" class="host-only card">
-            <input type="text" id="yt-url" placeholder="유튜브 URL">
-            <input type="text" id="custom-title" placeholder="표시할 제목">
+            <input type="text" id="yt-url" placeholder="유튜브 주소 입력">
+            <input type="text" id="custom-title" placeholder="곡 제목 지정">
             <label style="font-size: 0.8rem;"><input type="checkbox" id="is-loop"> 한곡 반복</label>
-            <button onclick="addToPlaylist()" style="background: #444;">추가</button>
-            <div style="display: flex; gap: 5px; margin-top:10px;">
+            <button onclick="addToPlaylist()" style="background: #444;">플레이리스트 추가</button>
+            <div style="display: flex; gap: 5px; margin-top:5px;">
                 <button onclick="savePlaylist()" style="background:#333; font-size: 0.8rem;">💾 저장</button>
                 <button onclick="document.getElementById('file-input').click()" style="background:#333; font-size: 0.8rem;">📂 불러오기</button>
             </div>
@@ -52,8 +56,9 @@
         </div>
 
         <div class="card">
-            <h3>플레이리스트</h3>
+            <h3 style="margin-top:0; font-size: 0.9rem;">플레이리스트</h3>
             <div id="playlist-container"></div>
+            <div id="log-area">시스템 상태: 준비 중...</div>
         </div>
     </div>
 
@@ -62,6 +67,14 @@
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
+        // 로그 출력 함수
+        function log(msg) {
+            const area = document.getElementById('log-area');
+            area.innerHTML += `<div>> ${msg}</div>`;
+            area.scrollTop = area.scrollHeight;
+        }
+
+        // Firebase 설정
         const firebaseConfig = {
             apiKey: "AIzaSyCmuKgORZHasMoHTfldQdN8AEBYwR2uOQ0",
             authDomain: "trpg-bgm-from.firebaseapp.com",
@@ -71,8 +84,12 @@
             messagingSenderId: "731757785916",
             appId: "1:731757785916:web:f02ee6e3d03f5e91856439"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            var db = firebase.database();
+            log("Firebase 연결 성공");
+        } catch(e) { log("Firebase 설정 오류!"); }
 
         const urlParams = new URLSearchParams(window.location.search);
         let roomId = urlParams.get('room');
@@ -83,26 +100,38 @@
             window.history.replaceState({}, '', `?room=${roomId}&host=true`);
         }
         document.getElementById('room-id').innerText = `ROOM: ${roomId}`;
-        if (isHost) document.querySelectorAll('.host-only').forEach(el => el.style.display = 'block');
+        if (isHost) {
+            document.querySelectorAll('.host-only').forEach(el => el.style.display = 'block');
+            log("호스트 모드 활성화");
+        }
 
         let player;
         let isPlayerReady = false;
         function onYouTubeIframeAPIReady() {
+            log("유튜브 API 로드 중...");
             player = new YT.Player('player', {
                 height: '10', width: '10',
                 playerVars: { 'autoplay': 1, 'controls': 0, 'playsinline': 1 },
                 events: {
-                    'onReady': () => { isPlayerReady = true; player.unMute(); player.setVolume(100); }
+                    'onReady': () => { isPlayerReady = true; log("유튜브 플레이어 준비 완료!"); },
+                    'onError': (e) => { log("유튜브 에러 발생: " + e.data); }
                 }
             });
         }
 
         function startSession() {
+            // 클릭 즉시 까만 창 제거
             document.getElementById('audio-unlock').style.display = 'none';
-            if (isPlayerReady) { player.playVideo(); setTimeout(() => { if(!isHost) player.pauseVideo(); }, 200); }
+            log("세션 시작됨");
+            
+            if (isPlayerReady) {
+                player.playVideo();
+                setTimeout(() => { if(!isHost) player.pauseVideo(); }, 300);
+            } else {
+                log("플레이어가 아직 준비되지 않았습니다. 잠시만 기다려주세요.");
+            }
         }
 
-        // 상태 캐싱 (불필요한 중복 명령 방지)
         let lastId = "";
         let lastStatus = "";
 
@@ -112,14 +141,13 @@
 
             document.getElementById('current-title').innerText = data.customTitle;
 
-            // 1. 영상 변경 감지
             if (lastId !== data.videoId) {
                 player.loadVideoById(data.videoId);
                 lastId = data.videoId;
-                lastStatus = "playing"; // 로드 직후는 보통 자동 재생됨
+                lastStatus = "playing";
+                log(`곡 변경: ${data.customTitle}`);
             }
 
-            // 2. 상태 제어 (진짜 변했을 때만 명령 전달)
             if (lastStatus !== data.status) {
                 if (data.status === 'playing') player.playVideo();
                 else if (data.status === 'paused') player.pauseVideo();
@@ -128,6 +156,7 @@
                     player.seekTo(0);
                 }
                 lastStatus = data.status;
+                log(`상태 변경: ${data.status}`);
             }
         });
 
@@ -142,4 +171,38 @@
                 isLoop: document.getElementById('is-loop').checked
             });
             render();
-            document.getElementById('yt-
+            document.getElementById('yt-url').value = "";
+            document.getElementById('custom-title').value = "";
+        }
+
+        function render() {
+            document.getElementById('playlist-container').innerHTML = playlist.map((item, i) => `
+                <div style="padding:10px; border-bottom:1px solid #333; display:flex; justify-content:space-between; font-size:0.8rem;">
+                    <span>${item.customTitle}</span>
+                    ${isHost ? `<button onclick="playTrack(${i})" style="width:50px; padding:3px; margin:0; font-size:0.7rem;">재생</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function playTrack(i) {
+            db.ref(`rooms/${roomId}/state`).set({ ...playlist[i], status: 'playing', ts: Date.now() });
+        }
+
+        function sendControl(status) {
+            db.ref(`rooms/${roomId}/state/status`).set(status);
+        }
+
+        function savePlaylist() {
+            const blob = new Blob([JSON.stringify(playlist)], {type: "application/json"});
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob); a.download = `playlist.json`; a.click();
+        }
+
+        function loadPlaylist(e) {
+            const reader = new FileReader();
+            reader.onload = (ev) => { playlist = JSON.parse(ev.target.result); render(); };
+            reader.readAsText(e.target.files[0]);
+        }
+    </script>
+</body>
+</html>
