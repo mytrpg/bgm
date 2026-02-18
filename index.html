@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRPG BGM from Youtube</title>
     <style>
-        :root { --primary: #bb86fc; --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #00ffff; --grey: #555; }
+        :root { --primary: #bb86fc; --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #00ffff; --grey: #333; }
         body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 650px; display: none; }
         
@@ -18,7 +18,8 @@
         #players-container { width: 1px; height: 1px; overflow: hidden; position: absolute; opacity: 0; }
         .card { background: var(--card); border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid #333; position: relative; }
         .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        h2, h3 { color: var(--primary); margin: 0; font-size: 1rem; }
+        h2 { color: var(--primary); margin: 0; font-size: 1rem; }
+        h3 { color: var(--primary); margin: 0; font-size: 0.95rem; }
         input, button { background: #2c2c2c; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 6px; margin: 4px 0; width: 100%; box-sizing: border-box; }
         button { cursor: pointer; background: #3700b3; border: none; font-weight: bold; font-size: 0.85rem; }
         
@@ -27,47 +28,51 @@
         .vol-header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
         .vol-desc { font-size: 0.65rem; color: #888; margin: 0; }
 
-        /* 현재 재생 중인 BGM 리스트 */
-        .active-track-item { background: #252525; padding: 12px; border-radius: 10px; margin-top: 10px; border-left: 4px solid var(--accent); }
+        /* 현재 재생 중인 BGM 리스트 (글자 크기 복구) */
+        .active-track-item { background: #252525; padding: 15px; border-radius: 10px; margin-top: 10px; border-left: 4px solid var(--accent); }
         .active-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .active-title { font-weight: bold; color: var(--accent); font-size: 0.9rem; }
-        .active-controls { display: flex; gap: 4px; width: 60%; align-items: center; }
-        .btn-status { flex: 1; padding: 5px; font-size: 0.65rem; background: #444; }
-        .btn-status.active { background: var(--accent); color: #000; }
+        .active-title { font-weight: bold; color: var(--accent); font-size: 1rem; }
+        .active-controls { display: flex; gap: 5px; width: 60%; align-items: center; }
         
-        /* 볼륨 + 타임라인 한 줄 통합 */
-        .slider-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; width: 100%; }
-        .row-label { font-size: 0.65rem; color: #aaa; white-space: nowrap; }
-        .vol-text { font-size: 0.7rem; min-width: 45px; color: var(--accent); text-decoration: underline; cursor: pointer; text-align: right; }
+        /* 볼륨 및 재생 바 스타일 */
+        .slider-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; width: 100%; }
+        .row-label { font-size: 0.7rem; color: #aaa; white-space: nowrap; }
+        .vol-text { font-size: 0.75rem; min-width: 40px; color: var(--accent); text-decoration: underline; cursor: pointer; text-align: right; }
         
-        input[type="range"] { -webkit-appearance: none; flex: 1; background: transparent; margin: 0; padding: 0; cursor: pointer; }
-        input[type="range"]:focus { outline: none; }
-        input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: #444; border-radius: 3px; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--accent); margin-top: -4px; }
-        .progress-bar::-webkit-slider-runnable-track { background: #222 !important; border: 1px solid #333; }
-        .time-text { font-size: 0.65rem; color: #888; min-width: 65px; text-align: right; font-family: monospace; }
+        /* 볼륨 바 컬러링 유지 */
+        input[type="range"] { -webkit-appearance: none; flex: 1; height: 6px; background: #444; border-radius: 3px; cursor: pointer; outline: none; }
+        input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--accent); margin-top: -4px; box-shadow: 0 0 2px #000; }
+        
+        /* 볼륨 바 색깔을 채우기 위한 백그라운드 처리 */
+        .fill-cyan { background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--p), #444 var(--p)) !important; }
 
-        /* 플레이리스트 */
-        .playlist-item { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 6px; border: 1px solid #333; cursor: grab; }
-        .btn-group { display: flex; gap: 3px; align-items: center; }
+        .time-text { font-size: 0.65rem; color: #888; min-width: 80px; text-align: right; font-family: monospace; }
+
+        /* 플레이리스트 (기능 복구) */
+        .playlist-item { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; cursor: grab; }
+        .item-main { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .btn-group { display: flex; gap: 4px; align-items: center; }
         .small-btn { padding: 4px 8px; font-size: 0.65rem; width: auto; min-width: 40px; }
         
-        /* [2, 3] 색상 및 상태 정의 */
-        .btn-loop-on { background: var(--primary) !important; color: #000; } /* 반복: 라벤더 */
-        .btn-loop-off { background: #555 !important; color: #ccc; } /* 1회: 회색 */
-        .btn-play-toggle { background: var(--accent) !important; color: #000; } /* PLAY: 시안 */
-        .btn-stop-toggle { background: var(--primary) !important; color: #000; } /* STOP: 라벤더 */
+        /* 버튼 색상 */
+        .btn-loop-on { background: var(--primary) !important; color: #000; }
+        .btn-loop-off { background: #555 !important; color: #ccc; }
+        .btn-play-toggle { background: var(--accent) !important; color: #000; }
+        .btn-stop-toggle { background: var(--primary) !important; color: #000; }
         
-        .item-meta { font-size: 0.6rem; color: #777; margin-top: 5px; line-height: 1.4; }
+        .item-meta { font-size: 0.65rem; color: #777; margin-top: 6px; line-height: 1.4; display: flex; align-items: center; gap: 5px; }
 
         /* 로그 및 유저 목록 */
-        #log-area { font-size: 0.65rem; color: #888; background: #000; padding: 8px; border-radius: 5px; height: 90px; overflow-y: auto; border: 1px solid #333; }
+        #log-area { font-size: 0.65rem; color: #888; background: #000; padding: 10px; border-radius: 5px; height: 100px; overflow-y: auto; border: 1px solid #333; }
         .user-tag { display: inline-block; padding: 2px 7px; border-radius: 12px; background: #333; margin-right: 4px; font-size: 0.7rem; border: 1px solid #444; }
         .user-tag.host { border-color: var(--primary); color: var(--primary); }
 
-        /* 팝업 모달 */
+        /* 모달 시스템 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 30000; display: none; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card); padding: 20px; border-radius: 12px; width: 320px; border: 1px solid var(--accent); }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 15px; width: 350px; border: 1px solid var(--accent); }
+        .modal-desc { font-size: 0.8rem; color: #bbb; line-height: 1.6; margin: 15px 0; }
+        
         .footer { text-align: center; font-size: 0.6rem; color: #444; margin-top: 30px; margin-bottom: 20px; }
         .host-only { display: none; }
     </style>
@@ -81,7 +86,7 @@
             <input type="text" id="input-nickname" placeholder="닉네임">
             <button onclick="enterRoom('host')" style="background:var(--primary); color:#000;">방 생성 (호스트)</button>
             <div id="guest-msg" style="display:none; margin-top:15px; font-size:0.8rem; color:#888;">
-                공유받은 링크로 접속 중입니다.<br>닉네임을 입력하고 입장하세요.
+                링크 접속 중입니다. 닉네임을 입력하고 입장하세요.
             </div>
         </div>
     </div>
@@ -91,14 +96,43 @@
         <b>사운드 시스템 활성화</b>
     </div>
 
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color:var(--accent);">BGM 정보 수정</h3>
+            <input type="text" id="edit-title" placeholder="곡 제목">
+            <input type="text" id="edit-url" placeholder="유튜브 URL">
+            <div style="display:flex; gap:8px; margin-top:15px;">
+                <button onclick="closeModal('edit-modal')" style="background:#444; flex:1;">취소</button>
+                <button onclick="saveEdit()" style="flex:1; background:var(--accent); color:#000;">저장</button>
+            </div>
+        </div>
+    </div>
+
     <div id="vol-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="color:var(--accent); margin-bottom:15px;">볼륨 설정</h3>
-            <p id="vol-modal-target" style="font-size:0.75rem; color:#888;"></p>
-            <input type="number" id="vol-input-box" min="0" max="100" style="margin-bottom:15px;">
-            <div style="display:flex; gap:8px;">
+            <h3 style="color:var(--accent);">볼륨 설정</h3>
+            <p id="vol-modal-target" style="font-size:0.75rem; color:#888; margin:10px 0;"></p>
+            <input type="number" id="vol-input-box" min="0" max="100">
+            <div style="display:flex; gap:8px; margin-top:15px;">
                 <button onclick="closeModal('vol-modal')" style="background:#444; flex:1;">취소</button>
                 <button onclick="saveVolumeFromModal()" style="flex:1; background:var(--accent); color:#000;">적용</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reset-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color:var(--primary);">방 데이터 초기화</h3>
+            <div class="modal-desc">
+                이 작업은 다음을 수행합니다:<br>
+                - 현재 재생 중인 모든 BGM 정지 및 제거<br>
+                - 하단 플레이리스트의 모든 목록 삭제<br>
+                - 방의 찌꺼기 데이터 완전 청소<br><br>
+                <b>주의: 접속 중인 닉네임과 권한은 유지됩니다.</b>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button onclick="closeModal('reset-modal')" style="background:#444; flex:1;">취소</button>
+                <button onclick="executeSoftReset()" style="flex:1; background:#b71c1c; color:#fff;">초기화 실행</button>
             </div>
         </div>
     </div>
@@ -107,19 +141,19 @@
         <div class="guest-master-vol">
             <div class="vol-header">
                 <span style="font-weight:bold; color:var(--accent); font-size:0.85rem;">My Master Volume</span>
-                <p class="vol-desc">* 나에게만 들리는 음량입니다.</p>
+                <p class="vol-desc">* 나에게만 들리는 전체 음량입니다.</p>
                 <span id="guest-vol-text" class="vol-text" title="클릭하여 볼륨 조절" onclick="openVolModal('master')">100%</span>
             </div>
-            <input type="range" id="guest-master-slider" min="0" max="100" value="100" oninput="changeMyMasterVolume(this.value)">
+            <input type="range" id="guest-master-slider" min="0" max="100" value="100" oninput="changeMyMasterVolume(this.value)" class="fill-cyan" style="--p:100%">
         </div>
 
         <div class="card">
             <div class="flex-header">
                 <h2>ROOM: <span id="room-display"></span></h2>
-                <button onclick="copyInviteLink()" style="width:auto; padding:5px 10px; font-size:0.65rem; background:#444;">초대 링크 복사</button>
+                <button onclick="copyInviteLink()" style="width:auto; padding:5px 10px; font-size:0.65rem; background:#444;">링크 복사</button>
             </div>
             <div id="players-container"></div>
-            <p style="margin: 15px 0 5px 0; font-size: 0.75rem; color: #666; font-weight: bold;">현재 재생 중인 BGM</p>
+            <p style="margin: 15px 0 5px 0; font-size: 0.8rem; color: #666; font-weight: bold;">현재 재생 중인 BGM</p>
             <div id="active-tracks-ui"></div>
         </div>
 
@@ -127,31 +161,32 @@
             <div class="flex-header">
                 <h3>곡 추가</h3>
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <label style="font-size:0.7rem; cursor:pointer;"><input type="checkbox" id="is-loop" style="width:auto; margin:0;"> 반복</label>
-                    <button onclick="addToPlaylist()" style="background:var(--accent); color:#000; width:60px; padding:4px;">추가</button>
+                    <label style="font-size:0.75rem; cursor:pointer;"><input type="checkbox" id="is-loop" style="width:auto; margin:0;"> 반복</label>
+                    <button onclick="addToPlaylist()" style="background:var(--accent); color:#000; width:65px; padding:5px; font-size:0.75rem;">추가</button>
                 </div>
             </div>
-            <input type="text" id="yt-url" placeholder="유튜브 URL"><input type="text" id="custom-title" placeholder="표시 제목">
+            <input type="text" id="yt-url" placeholder="유튜브 URL">
+            <input type="text" id="custom-title" placeholder="표시 제목">
             <div style="display: flex; gap: 4px; margin-top:8px;">
-                <button onclick="savePlaylist()" style="flex:1; background:#333; font-size:0.65rem;">💾 저장</button>
-                <button onclick="document.getElementById('file-input').click()" style="flex:1; background:#333; font-size:0.65rem;">📂 열기</button>
-                <button onclick="softReset()" style="flex:1; background:#b71c1c; font-size:0.65rem;">🧹 초기화</button>
+                <button onclick="savePlaylist()" style="flex:1; background:#333; font-size:0.7rem;">💾 저장</button>
+                <button onclick="document.getElementById('file-input').click()" style="flex:1; background:#333; font-size:0.7rem;">📂 열기</button>
+                <button onclick="openResetModal()" style="flex:1; background:#b71c1c; font-size:0.7rem;">🧹 초기화</button>
             </div>
             <input type="file" id="file-input" style="display:none" onchange="loadPlaylist(event)">
         </div>
 
         <div class="card">
-            <h3 id="playlist-header" style="margin-bottom:10px;">플레이리스트</h3>
+            <h3 id="playlist-header" style="margin-bottom:12px;">플레이리스트</h3>
             <div id="playlist-container"></div>
         </div>
 
         <div class="card">
-            <h3 style="margin-bottom:10px; font-size: 0.8rem;">접속자 (<span id="user-count">0</span>)</h3>
+            <h3 style="margin-bottom:10px; font-size: 0.85rem;">접속자 (<span id="user-count">0</span>)</h3>
             <div id="user-list-container"></div>
         </div>
 
         <div class="card">
-            <h3 style="margin-bottom:8px; font-size: 0.8rem;">시스템 로그</h3>
+            <h3 style="margin-bottom:8px; font-size: 0.85rem;">시스템 로그</h3>
             <div id="log-area">로그 대기 중...</div>
         </div>
 
@@ -177,15 +212,26 @@
 
         let roomId = "", roomName = "", isHost = false, myNickname = "", myMasterVol = 100, playlist = [], players = {}, currentActiveData = {};
 
-        // [세션 복구 로직] URL 파라미터 확인
+        // [접속 초과 메시지]
+        db.ref(".info/connected").on("value", (snap) => {
+            if (snap.val() === false) {
+                // 접속이 끊긴 지 10초가 지났는데도 연결이 안 되면 알림 (초기 로딩 시 100명 초과 대응)
+                setTimeout(() => {
+                    if (!db.app.options) return; // 미초기화 상태면 무시
+                    if (snap.val() === false && !document.getElementById('main-container').style.display) {
+                        alert("현재 서버 접속자가 너무 많아 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+                    }
+                }, 10000);
+            }
+        });
+
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             const rId = params.get('room');
-            const hToken = params.get('h');
             if (rId) {
                 roomId = rId;
                 document.getElementById('guest-msg').style.display = 'block';
-                if (hToken === '1') {
+                if (params.get('h') === '1') {
                     isHost = true;
                     document.querySelector('button[onclick="enterRoom(\'host\')"]').innerText = "관리자 세션 복구";
                 } else {
@@ -200,26 +246,21 @@
             myNickname = nName;
 
             if (!roomId) {
-                // 완전히 새로운 방 생성
                 isHost = true;
                 roomName = document.getElementById('input-room-name').value.trim() || "TRPG SESSION";
                 roomId = Math.random().toString(36).substring(2, 10);
                 await db.ref(`rooms/${roomId}/roomName`).set(roomName);
             } else {
-                // 기존 방 입장 혹은 복구
                 const snap = await db.ref(`rooms/${roomId}`).once('value');
-                if (!snap.exists()) return alert("만료되었거나 존재하지 않는 방입니다.");
-                
-                // [5, 6] 클린업 체크: 5분 이상 방치된 데이터인지 확인
+                if (!snap.exists()) return alert("만료된 방입니다.");
                 const emptySince = snap.val().emptySince;
                 if (emptySince && Date.now() - emptySince > 300000) {
                     await db.ref(`rooms/${roomId}`).remove();
-                    return alert("5분 이상 비어있어 방 데이터가 삭제되었습니다. 새로 생성하세요.");
+                    return alert("5분 이상 비어있어 방 데이터가 삭제되었습니다.");
                 }
                 roomName = snap.val().roomName || "TRPG SESSION";
             }
 
-            // 호스트라면 주소창에 토큰 유지
             if (isHost) {
                 const newUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}&h=1`;
                 window.history.replaceState({}, '', newUrl);
@@ -239,28 +280,21 @@
 
         function copyInviteLink() {
             const link = `${window.location.origin}${window.location.pathname}?room=${roomId}`;
-            navigator.clipboard.writeText(link).then(() => alert("게스트용 초대 링크가 복사되었습니다!"));
+            navigator.clipboard.writeText(link).then(() => alert("초대 링크 복사 완료!"));
         }
 
         function setupPresence() {
             const usersRef = db.ref(`rooms/${roomId}/users`);
             const userRef = usersRef.push();
             userRef.onDisconnect().remove();
-
-            // [5, 6] 마지막 인원이 나갈 때 타임스탬프 기록
             usersRef.on('value', (snap) => {
                 const users = snap.val() || {};
                 const userArray = Object.values(users);
-                if (userArray.length === 0) {
-                    db.ref(`rooms/${roomId}/emptySince`).set(Date.now());
-                } else {
-                    db.ref(`rooms/${roomId}/emptySince`).remove();
-                }
-                
-                // 접속자 명단 업데이트
+                if (userArray.length === 0) db.ref(`rooms/${roomId}/emptySince`).set(Date.now());
+                else db.ref(`rooms/${roomId}/emptySince`).remove();
+                document.getElementById('user-count').innerText = userArray.length;
                 const container = document.getElementById('user-list-container');
                 container.innerHTML = '';
-                document.getElementById('user-count').innerText = userArray.length;
                 userArray.forEach(u => {
                     const tag = document.createElement('span');
                     tag.className = `user-tag ${u.isHost ? 'host' : ''}`;
@@ -273,7 +307,7 @@
 
         function unlockAudio() { document.getElementById('audio-unlock').style.display = 'none'; log(`세션 접속: ${myNickname}`); }
 
-        // 볼륨 모달 로직
+        // 볼륨 모달
         let vt = null, vv = null, vi = null;
         function openVolModal(type, vid = null, index = null) {
             vt = type; vv = vid; vi = index;
@@ -291,14 +325,22 @@
         }
 
         function changeMyMasterVolume(val) {
-            myMasterVol = val; document.getElementById('guest-vol-text').innerText = `${val}%`;
-            document.getElementById('guest-master-slider').value = val;
-            Object.keys(players).forEach(vid => { if(players[vid].setVolume) {
-                const sVol = (currentActiveData[vid] && currentActiveData[vid].volume !== undefined) ? currentActiveData[vid].volume : 100;
-                players[vid].setVolume((sVol * myMasterVol) / 100);
-            }});
+            myMasterVol = val;
+            document.getElementById('guest-vol-text').innerText = `${val}%`;
+            const slider = document.getElementById('guest-master-slider');
+            slider.value = val;
+            slider.style.setProperty('--p', val + '%');
+            Object.keys(players).forEach(vid => applyCalculatedVolume(vid));
         }
 
+        function applyCalculatedVolume(vid) {
+            if (players[vid] && players[vid].setVolume) {
+                const sVol = (currentActiveData[vid] && currentActiveData[vid].volume !== undefined) ? currentActiveData[vid].volume : 100;
+                players[vid].setVolume((sVol * myMasterVol) / 100);
+            }
+        }
+
+        // [현재 재생 중인 BGM UI] 볼륨 바 및 레이아웃 복구
         function initSync() {
             db.ref(`rooms/${roomId}/active`).on('value', (snap) => {
                 currentActiveData = snap.val() || {};
@@ -310,7 +352,7 @@
                     const track = currentActiveData[vid];
                     const div = document.createElement('div');
                     div.className = 'active-track-item';
-                    const s = track.status, l = track.loop;
+                    const s = track.status, l = track.loop, vol = track.volume || 100;
                     
                     div.innerHTML = `
                         <div class="active-header">
@@ -324,9 +366,11 @@
                             </div>
                         </div>
                         <div class="slider-row">
-                            <span class="row-label">Vol</span>
-                            <span class="vol-text" onclick="${isHost?`openVolModal('active', '${vid}')`:''}">${track.volume || 100}%</span>
-                            <input type="range" class="progress-bar" id="bar-${vid}" value="0" min="0" step="1" oninput="if(players['${vid}'])players['${vid}'].seekTo(this.value)" ${isHost?'':'disabled'}>
+                            <span class="row-label">재생 볼륨</span>
+                            <span class="vol-text" title="클릭하여 수정" onclick="${isHost?`openVolModal('active', '${vid}')`:''}">${vol}%</span>
+                            <input type="range" min="0" max="100" value="${vol}" disabled class="fill-cyan" style="--p:${vol}%; flex:0.3; min-width:60px;">
+                            <div style="width:15px;"></div>
+                            <input type="range" class="progress-bar fill-cyan" id="bar-${vid}" value="0" min="0" step="1" oninput="if(players['${vid}'])players['${vid}'].seekTo(this.value)" ${isHost?'':'disabled'} style="--p:0%">
                             <span class="time-text" id="time-${vid}">0:00 / 0:00</span>
                         </div>
                     `;
@@ -338,8 +382,7 @@
                         if (s === 'playing') players[vid].playVideo();
                         else if (s === 'paused') players[vid].pauseVideo();
                         else if (s === 'stopped') { players[vid].pauseVideo(); players[vid].seekTo(0); }
-                        const sVol = track.volume || 100;
-                        players[vid].setVolume((sVol * myMasterVol) / 100);
+                        applyCalculatedVolume(vid);
                     }
                 });
                 Object.keys(players).forEach(vid => { if (!currentActiveData[vid]) { players[vid].stopVideo(); players[vid].destroy(); delete players[vid]; } });
@@ -354,10 +397,7 @@
                 height: '1', width: '1', videoId: vid,
                 playerVars: { 'autoplay': 0, 'controls': 0, 'playsinline': 1 },
                 events: {
-                    'onReady': (e) => { 
-                        if (initialStatus === 'playing') e.target.playVideo();
-                        log(`로드: [${title}]`); 
-                    },
+                    'onReady': (e) => { if (initialStatus === 'playing') e.target.playVideo(); log(`로드: [${title}]`); },
                     'onStateChange': (e) => { if (e.data === YT.PlayerState.ENDED && currentActiveData[vid].loop) e.target.playVideo(); }
                 }
             });
@@ -373,6 +413,8 @@
                     if (bar && timeDisp) {
                         const cur = p.getCurrentTime(); const tot = p.getDuration();
                         bar.max = tot; bar.value = cur;
+                        const per = tot > 0 ? (cur / tot) * 100 : 0;
+                        bar.style.setProperty('--p', per + '%');
                         timeDisp.innerText = `${formatTime(cur)} / ${tot > 0 ? formatTime(tot) : "0:00"}`;
                     }
                 }
@@ -391,24 +433,29 @@
             render(); document.getElementById('yt-url').value = ""; document.getElementById('custom-title').value = "";
         }
 
+        // [플레이리스트 UI] 볼륨 바, 링크 아이콘, 수정 버튼 복구
         function render() {
             const container = document.getElementById('playlist-container'); container.innerHTML = '';
             playlist.forEach((item, i) => {
                 const isActive = !!players[item.id];
                 const div = document.createElement('div'); div.className = 'playlist-item'; div.draggable = isHost;
                 div.innerHTML = `
-                    <div class="item-main" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="item-main">
                         <span style="font-weight:bold; font-size:0.85rem;">${item.title} ${isActive ? '<span style="color:var(--accent); font-size:0.7rem;">[ON]</span>' : ''}</span>
                         <div class="btn-group">
                             ${isHost ? `
-                                <span class="vol-text" style="font-size:0.6rem; text-decoration:none;" onclick="openVolModal('playlist', null, ${i})">${item.volume}% V</span>
+                                <div class="slider-group" style="display:flex; align-items:center; gap:5px; margin-right:8px;">
+                                    <input type="range" min="0" max="100" value="${item.volume}" disabled class="fill-cyan" style="--p:${item.volume}%; width:50px; height:4px;">
+                                    <span class="vol-text" style="font-size:0.6rem; text-decoration:none;" onclick="openVolModal('playlist', null, ${i})">${item.volume}%</span>
+                                </div>
                                 <button class="small-btn ${item.loop?'btn-loop-on':'btn-loop-off'}" onclick="playlist[${i}].loop=!playlist[${i}].loop; render();">${item.loop?'반복':'1회'}</button>
                                 <button class="small-btn ${isActive ? 'btn-stop-toggle' : 'btn-play-toggle'}" onclick="${isActive ? `db.ref('rooms/${roomId}/active/${item.id}').remove()` : `db.ref('rooms/${roomId}/active/${item.id}').set({title:'${item.title}', status:'playing', loop:${item.loop}, volume:${item.volume}})`}">${isActive ? 'STOP' : 'PLAY'}</button>
+                                <button class="small-btn" style="background:#555" onclick="openEditModal(${i})">수정</button>
                                 <button class="small-btn" onclick="playlist.splice(${i}, 1); render();" style="background:#b71c1c">X</button>
                             ` : ''}
                         </div>
                     </div>
-                    ${isHost ? `<div class="item-meta">📄 원제: ${item.originalTitle}</div>` : ''}
+                    ${isHost ? `<div class="item-meta">🔗 <a href="${item.url}" target="_blank" style="color:#666; text-decoration:underline;">${item.url}</a><br>📄 원제: ${item.originalTitle}</div>` : ''}
                 `;
                 if (isHost) {
                     div.ondragstart = () => div.classList.add('dragging');
@@ -419,9 +466,8 @@
             if (isHost) {
                 container.ondragover = e => {
                     e.preventDefault();
-                    const dragging = document.querySelector('.dragging');
                     const next = [...container.querySelectorAll('.playlist-item:not(.dragging)')].find(s => e.clientY <= s.getBoundingClientRect().top + s.offsetHeight / 2);
-                    container.insertBefore(dragging, next);
+                    container.insertBefore(document.querySelector('.dragging'), next);
                 };
             }
         }
@@ -430,8 +476,26 @@
             const titles = [...document.querySelectorAll('.playlist-item span:first-child')].map(el => el.innerText.split(' [ON]')[0].trim());
             playlist = titles.map(t => playlist.find(p => p.title === t)).filter(p => p);
         }
+        function openEditModal(i) {
+            editingIndex = i; document.getElementById('edit-title').value = playlist[i].title;
+            document.getElementById('edit-url').value = playlist[i].url;
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+        function saveEdit() {
+            const nt = document.getElementById('edit-title').value, nu = document.getElementById('edit-url').value, nv = nu.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/)?.[1];
+            if (nt) playlist[editingIndex].title = nt; if (nv) { playlist[editingIndex].url = nu; playlist[editingIndex].id = nv; }
+            render(); closeModal('edit-modal');
+        }
         function closeModal(mId) { document.getElementById(mId).style.display = 'none'; }
-        function softReset() { if(confirm("초기화?")) { db.ref(`rooms/${roomId}/active`).remove(); playlist = []; render(); log("🧹 초기화 완료."); } }
+        
+        // 초기화 모달 로직
+        function openResetModal() { document.getElementById('reset-modal').style.display = 'flex'; }
+        function executeSoftReset() {
+            db.ref(`rooms/${roomId}/active`).remove();
+            playlist = []; render(); log("🧹 시스템 전체 초기화 완료.");
+            closeModal('reset-modal');
+        }
+
         function savePlaylist() {
             const fn = prompt("저장 파일명:", `playlist_${roomName}`); if (!fn) return;
             const blob = new Blob([JSON.stringify(playlist)], {type: "application/json"});
